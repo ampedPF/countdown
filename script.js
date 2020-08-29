@@ -1,26 +1,23 @@
 var data = {};
-const countdownEl = document.getElementById('countdown');
+let countdownEl = document.getElementById('countdown');
 
 let milliseconds = 0;
 let timeLeft = 0;
+let updateId = 0;
 
 function loadJSON() {
     return $.getJSON('./config.json');
 }
 
-function updateTimer() {
-    const minutes = Math.floor(time / 60);
-    let seconds = time % 60;
-    seconds = seconds < 10 ? '0' + seconds : seconds;
-
-    document.getElementById('countdown').innerHTML = `${minutes}:${seconds}`;
-    time--;
-}
-
 function updateCountdown() {
     milliseconds = endDate - new Date();
-    timeLeft = convertMilliseconds(milliseconds);
-    document.getElementById('countdown').innerHTML = formatTimeLeftString(timeLeft);
+    if (milliseconds > 0 || data.overtimeCountdown) {
+        timeLeft = convertMilliseconds(milliseconds);
+        countdownEl.innerHTML = formatTimeLeftString(timeLeft);
+    } else {
+        countdownEl.innerHTML = formatTimeLeftString(convertMilliseconds(0));
+        clearInterval(updateId);
+    }
 }
 
 function formatTimeString(timeStr) {
@@ -28,17 +25,19 @@ function formatTimeString(timeStr) {
 }
 
 function formatTimeLeftString(timeLeft) {
-    return timeLeft.d + data.separators.days +
-        formatTimeString(timeLeft.h) + data.separators.hours +
-        formatTimeString(timeLeft.m) + data.separators.minutes +
-        formatTimeString(timeLeft.s) + data.separators.seconds;
+    negativeSign = (data.overtimeCountdown && milliseconds < 0) ? "-" : "";
+    daysLeftString = ((data.displayIfNull.days || timeLeft.d > 0) || (data.overtimeCountdown && timeLeft.d != 0)) ? timeLeft.d + data.separators.days : "";
+    hoursLeftString = ((data.displayIfNull.hours || timeLeft.h > 0) || (data.overtimeCountdown && timeLeft.h != 0)) ? formatTimeString(timeLeft.h) + data.separators.hours : "";
+    minutesLeftString = ((data.displayIfNull.minutes || timeLeft.m > 0) || (data.overtimeCountdown && timeLeft.m != 0)) ? formatTimeString(timeLeft.m) + data.separators.minutes : "";
+    secondsLeftString = ((data.displayIfNull.seconds || timeLeft.s > 0) || (data.overtimeCountdown && timeLeft.s != 0)) ? formatTimeString(timeLeft.s) + data.separators.seconds : "";
+    return negativeSign + daysLeftString + hoursLeftString + minutesLeftString + secondsLeftString;
 }
 
 // https://gist.github.com/flangofas/714f401b63a1c3d84aaa#file-convertms-js
 function convertMilliseconds(milliseconds, format) {
     var days, hours, minutes, seconds, total_hours, total_minutes, total_seconds;
 
-    total_seconds = parseInt(Math.floor(milliseconds / 1000));
+    total_seconds = parseInt(Math.floor(Math.abs(milliseconds) / 1000));
     total_minutes = parseInt(Math.floor(total_seconds / 60));
     total_hours = parseInt(Math.floor(total_minutes / 60));
     days = parseInt(Math.floor(total_hours / 24));
@@ -66,6 +65,8 @@ function convertMilliseconds(milliseconds, format) {
 $.when(loadJSON())
     .then(function (response) {
         data = response;
+        countdownEl = document.getElementById('countdown');
         endDate = new Date(data.date + "T" + data.time);
-        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        updateId = setInterval(updateCountdown, 1000);
     });
