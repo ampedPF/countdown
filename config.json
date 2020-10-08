@@ -1,17 +1,28 @@
 {
-    "date": "2020-08-29",
-    "time": "01:20:00",
-    "separators": {
+    "useDuration": false,
+    "duration": {
+        "days": "1",
+        "hours": "0",
+        "minutes": "0",
+        "seconds": "0",
+        "milliseconds": "0"
+    },
+    "date": "2021-01-01",
+    "time": "00:00:00",
+    "suffix": {
         "days": "D ",
         "hours": ":",
         "minutes": ":",
-        "seconds": ""
+        "seconds": "",
+        "milliseconds": ""
     },
     "displayIfNull": {
         "days": false,
         "hours": true,
         "minutes": true,
-        "seconds": true
+        "seconds": true,
+        "milliseconds": false
     },
+    "displayMilliseconds": false,
     "overtimeCountdown": true
 }

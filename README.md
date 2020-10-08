@@ -1,5 +1,3 @@
-# Install http-server
-```npm install -g http-server```
+Add as browser source in an OBS scene.
 
-# Launch app
-```http-server -o countdown.html -c-1```
+Configure values and format in ```config.json```
