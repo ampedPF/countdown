@@ -86,5 +86,5 @@ countdownEl = document.getElementById('countdown');
 
 endDate = data.useDuration ? Date.now() + getDurationInMilliseconds() : new Date(data.date + "T" + data.time);
 updateCountdown();
-updateId = setInterval(updateCountdown, 1000);
+updateId = setInterval(updateCountdown, parseInt(data.updateIntervalInMillisecond));
 });
